@@ -1,10 +1,9 @@
 const video = document.getElementById("video");
-const canvas = document.getElementById("canvas");
-const statusEl = document.getElementById("status");
 const btn = document.getElementById("captureBtn");
+const statusEl = document.getElementById("status");
 
 /* =========================
-   START CAMERA (STABLE)
+   START CAMERA (HIGH QUALITY)
 ========================= */
 async function startCamera() {
     try {
@@ -12,7 +11,11 @@ async function startCamera() {
 
         const stream = await navigator.mediaDevices.getUserMedia({
             video: {
-                facingMode: { ideal: "environment" }
+                facingMode: { ideal: "environment" },
+
+                // 🔥 MAX QUALITY REQUEST
+                width: { ideal: 3840 },
+                height: { ideal: 2160 }
             },
             audio: false
         });
@@ -22,12 +25,12 @@ async function startCamera() {
         video.addEventListener("loadedmetadata", () => {
             video.play()
                 .then(() => {
-                    setCameraRatio();
                     statusEl.innerText = "READY ✔";
+                    console.log("Camera resolution:", video.videoWidth, video.videoHeight);
                 })
                 .catch(err => {
                     console.error("PLAY ERROR:", err);
-                    statusEl.innerText = "PLAY BLOCKED";
+                    statusEl.innerText = "PLAY ERROR";
                 });
         });
 
@@ -38,36 +41,30 @@ async function startCamera() {
 }
 
 /* =========================
-   CAMERA RATIO FIX
-========================= */
-function setCameraRatio() {
-    const track = video?.srcObject?.getVideoTracks?.()[0];
-    if (!track) return;
-
-    const settings = track.getSettings();
-
-    if (settings.width && settings.height) {
-        const ratio = settings.width / settings.height;
-        document.documentElement.style.setProperty("--cam-ratio", ratio);
-    }
-}
-
-/* =========================
-   CAPTURE IMAGE
+   HIGH QUALITY CAPTURE
 ========================= */
 function capturePhoto() {
-
-    const ctx = canvas.getContext("2d");
 
     const vw = video.videoWidth;
     const vh = video.videoHeight;
 
+    if (!vw || !vh) {
+        statusEl.innerText = "NO VIDEO DATA";
+        return;
+    }
+
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+
     canvas.width = vw;
     canvas.height = vh;
 
+    // 🔥 important for sharp image
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
+
     ctx.drawImage(video, 0, 0, vw, vh);
 
-    /* full frame export (MVP) */
     canvas.toBlob((blob) => {
 
         const url = URL.createObjectURL(blob);
@@ -90,7 +87,7 @@ function capturePhoto() {
 
         statusEl.innerText = "SAVED ✔";
 
-    }, "image/jpeg", 0.92);
+    }, "image/jpeg", 0.95);
 }
 
 /* =========================

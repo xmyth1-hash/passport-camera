@@ -5,16 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Passport Scanner</title>
 
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=2">
 </head>
 
 <body>
 
 <div class="overlay">
   <div class="frame-wrap">
-
     <div class="camera-frame">
-
       <div class="passport-frame">
 
         <div class="corner tl"></div>
@@ -26,21 +24,18 @@
         <div class="mrz-zone"></div>
 
       </div>
-
     </div>
-
   </div>
 </div>
 
 <div id="status" class="status">INIT...</div>
 
+<!-- IMPORTANT: playsinline + muted -->
 <video id="video" autoplay playsinline muted></video>
-
-<canvas id="canvas" style="display:none;"></canvas>
 
 <button id="captureBtn">CAPTURE</button>
 
-<script src="script.js"></script>
+<script src="script.js?v=2"></script>
 
 </body>
 </html>
