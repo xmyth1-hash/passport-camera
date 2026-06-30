@@ -4,10 +4,12 @@ const statusEl = document.getElementById("status");
 const btn = document.getElementById("captureBtn");
 
 /* =========================
-   START CAMERA
+   START CAMERA (STABLE)
 ========================= */
 async function startCamera() {
     try {
+        statusEl.innerText = "REQUESTING CAMERA...";
+
         const stream = await navigator.mediaDevices.getUserMedia({
             video: {
                 facingMode: { ideal: "environment" }
@@ -17,22 +19,26 @@ async function startCamera() {
 
         video.srcObject = stream;
 
-        video.onloadedmetadata = async () => {
-            await video.play();
-
-            setCameraRatio(); // 🔥 критично для исправления пропорций
-
-            statusEl.innerText = "READY ✔";
-        };
+        video.addEventListener("loadedmetadata", () => {
+            video.play()
+                .then(() => {
+                    setCameraRatio();
+                    statusEl.innerText = "READY ✔";
+                })
+                .catch(err => {
+                    console.error("PLAY ERROR:", err);
+                    statusEl.innerText = "PLAY BLOCKED";
+                });
+        });
 
     } catch (err) {
-        console.error(err);
+        console.error("CAMERA ERROR:", err);
         statusEl.innerText = "CAMERA ERROR";
     }
 }
 
 /* =========================
-   FIX CAMERA RATIO (IMPORTANT)
+   CAMERA RATIO FIX
 ========================= */
 function setCameraRatio() {
     const track = video?.srcObject?.getVideoTracks?.()[0];
@@ -42,18 +48,14 @@ function setCameraRatio() {
 
     if (settings.width && settings.height) {
         const ratio = settings.width / settings.height;
-
-        document.documentElement.style.setProperty(
-            "--cam-ratio",
-            ratio
-        );
+        document.documentElement.style.setProperty("--cam-ratio", ratio);
     }
 }
 
 /* =========================
-   CAPTURE + CROP PASSPORT AREA
+   CAPTURE IMAGE
 ========================= */
-function capturePassport() {
+function capturePhoto() {
 
     const ctx = canvas.getContext("2d");
 
@@ -65,53 +67,19 @@ function capturePassport() {
 
     ctx.drawImage(video, 0, 0, vw, vh);
 
-    /* =========================
-       FRAME GEOMETRY (matches CSS center layout)
-    ========================= */
-    const frameAspect = vw / vh;
-
-    let frameH = vh * 0.92;
-    let frameW = frameH * frameAspect;
-
-    const frameX = (vw - frameW) / 2;
-    const frameY = (vh - frameH) / 2;
-
-    /* =========================
-       OUTPUT CANVAS (CLEAN IMAGE)
-    ========================= */
-    const out = document.createElement("canvas");
-    const octx = out.getContext("2d");
-
-    out.width = Math.floor(frameW);
-    out.height = Math.floor(frameH);
-
-    octx.drawImage(
-        canvas,
-        frameX,
-        frameY,
-        frameW,
-        frameH,
-        0,
-        0,
-        out.width,
-        out.height
-    );
-
-    /* =========================
-       EXPORT JPEG
-    ========================= */
-    out.toBlob((blob) => {
+    /* full frame export (MVP) */
+    canvas.toBlob((blob) => {
 
         const url = URL.createObjectURL(blob);
 
         const a = document.createElement("a");
+        a.href = url;
 
         const filename =
             "passport_" +
             new Date().toISOString().replace(/[:.]/g, "-") +
             ".jpg";
 
-        a.href = url;
         a.download = filename;
 
         document.body.appendChild(a);
@@ -128,7 +96,7 @@ function capturePassport() {
 /* =========================
    EVENTS
 ========================= */
-btn.addEventListener("click", capturePassport);
+btn.addEventListener("click", capturePhoto);
 
 /* =========================
    INIT
