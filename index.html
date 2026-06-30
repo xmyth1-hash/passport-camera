@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Passport Scanner</title>
+
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="status" id="status">ALIGN DOCUMENT</div>
+
+<!-- CAMERA LAYER (пока пустой) -->
+<video id="video" autoplay playsinline muted></video>
+
+<!-- OVERLAY -->
+<div class="overlay">
+    <div class="frame-wrap">
+        <div class="passport-frame">
+
+            <div class="corner tl"></div>
+            <div class="corner tr"></div>
+            <div class="corner bl"></div>
+            <div class="corner br"></div>
+
+            <div class="photo-zone"></div>
+            <div class="mrz-zone"></div>
+
+        </div>
+    </div>
+</div>
+
+<button id="captureBtn">CAPTURE</button>
+
+<canvas id="canvas" style="display:none;"></canvas>
+
+<script src="script.js"></script>
+</body>
+</html>
