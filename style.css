@@ -18,7 +18,7 @@ video {
 }
 
 /* =========================
-   DARK OVERLAY
+   DARK OVERLAY (scanner look)
 ========================= */
 .overlay {
     position: fixed;
@@ -34,7 +34,7 @@ video {
 }
 
 /* =========================
-   CENTER WRAPPER
+   CENTER CONTAINER
 ========================= */
 .frame-wrap {
     position: absolute;
@@ -49,7 +49,7 @@ video {
 }
 
 /* =========================
-   CAMERA FRAME (FIX FOR OVERFLOW)
+   SAFE CAMERA BOX
 ========================= */
 .camera-frame {
     position: relative;
@@ -63,28 +63,28 @@ video {
 }
 
 /* =========================
-   PASSPORT FRAME (ID-1 RATIO INSIDE SAFE BOX)
+   PASSPORT FRAME (FIXED RATIO CORE)
 ========================= */
 .passport-frame {
     position: relative;
 
     width: 100%;
-    height: 100%;
+    height: auto;
 
-    aspect-ratio: 1.586;
+    aspect-ratio: 1.586 / 1;
 
-    border: 2px solid rgba(0, 255, 120, 0.7);
+    border: 2px solid rgba(0, 255, 120, 0.75);
     box-sizing: border-box;
 
     box-shadow:
         0 0 0 1px rgba(0,255,120,0.08),
-        0 0 20px rgba(0,255,120,0.08);
+        0 0 22px rgba(0,255,120,0.08);
 
     background: rgba(0,0,0,0.02);
 }
 
 /* =========================
-   GRID
+   GRID OVERLAY
 ========================= */
 .passport-frame::before {
     content: "";
@@ -101,7 +101,7 @@ video {
 }
 
 /* =========================
-   CORNERS
+   CORNERS (scanner style)
 ========================= */
 .corner {
     position: absolute;
@@ -141,7 +141,7 @@ video {
 }
 
 /* =========================
-   PHOTO ZONE (REALISTIC POSITION)
+   PHOTO ZONE
 ========================= */
 .photo-zone {
     position: absolute;
@@ -210,21 +210,22 @@ button {
     font-weight: bold;
 
     box-shadow: 0 0 15px rgba(0,255,122,0.25);
+    cursor: pointer;
 }
 
 /* =========================
-   RESPONSIVE
+   RESPONSIVE FIXES
 ========================= */
-@media (orientation: landscape) {
-    .camera-frame {
-        width: min(85vw, 600px);
-        height: min(90vh, 850px);
-    }
-}
-
 @media (orientation: portrait) {
     .camera-frame {
         width: 92vw;
-        height: min(92vh, 900px);
+        height: 92vh;
+    }
+}
+
+@media (orientation: landscape) {
+    .camera-frame {
+        width: 85vw;
+        height: 90vh;
     }
 }
