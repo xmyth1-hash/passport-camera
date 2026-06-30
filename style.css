@@ -15,7 +15,6 @@ video {
     height: 100vh;
     object-fit: cover;
     z-index: 1;
-    background: #111;
 }
 
 /* =========================
@@ -29,13 +28,13 @@ video {
     background: radial-gradient(
         circle at center,
         rgba(0,0,0,0) 40%,
-        rgba(0,0,0,0.55) 75%,
-        rgba(0,0,0,0.85) 100%
+        rgba(0,0,0,0.6) 75%,
+        rgba(0,0,0,0.9) 100%
     );
 }
 
 /* =========================
-   CENTER WRAPPER (FIXED HEIGHT CONTROL)
+   WRAPPER (FULL SCREEN CENTERING)
 ========================= */
 .frame-wrap {
     position: absolute;
@@ -45,33 +44,41 @@ video {
     align-items: center;
     justify-content: center;
 
-    /* почти нет паддинга — максимум пространства */
-    padding: 2vh 0;
-
-    box-sizing: border-box;
+    padding: 0;
 }
 
 /* =========================
-   PASSPORT FRAME (MAIN FIX)
-   🔥 теперь почти fullscreen по высоте
+   CAMERA ASPECT CONTAINER
+   🔥 ЭТО ГЛАВНЫЙ ФИКС
+========================= */
+.camera-frame {
+    position: relative;
+
+    height: 92vh;
+
+    /* aspect ratio приходит из JS */
+    aspect-ratio: var(--cam-ratio, 1.586);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* =========================
+   PASSPORT FRAME (ID-1 inside camera space)
 ========================= */
 .passport-frame {
     position: relative;
 
-    height: 92vh;          /* 🔥 ключевая правка */
-    aspect-ratio: 1.586;   /* ID-1 стандарт */
-
-    max-width: 96vw;       /* чтобы не вылезало на узких экранах */
+    width: 100%;
+    height: 100%;
 
     border: 2px solid rgba(0, 255, 120, 0.7);
-
     box-sizing: border-box;
 
     box-shadow:
         0 0 0 1px rgba(0,255,120,0.08),
-        0 0 25px rgba(0,255,120,0.08);
-
-    background: rgba(0,0,0,0.02);
+        0 0 20px rgba(0,255,120,0.08);
 }
 
 /* =========================
@@ -86,7 +93,7 @@ video {
         linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
         linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
 
-    background-size: 26px 26px;
+    background-size: 24px 24px;
 
     pointer-events: none;
 }
@@ -96,11 +103,11 @@ video {
 ========================= */
 .corner {
     position: absolute;
-    width: 38px;
-    height: 38px;
+    width: 36px;
+    height: 36px;
 
     border: 3px solid #00ff7a;
-    filter: drop-shadow(0 0 8px rgba(0,255,122,0.85));
+    filter: drop-shadow(0 0 8px rgba(0,255,122,0.9));
 }
 
 .corner.tl {
@@ -132,32 +139,19 @@ video {
 }
 
 /* =========================
-  /* =========================
-   PHOTO ZONE
+   PHOTO ZONE (FIXED POSITIONING)
 ========================= */
 .photo-zone {
     position: absolute;
 
-    /* ближе к левому краю */
     left: 3%;
+    top: 10%;
 
-    /* немного ниже верхнего края */
-    top: 12%;
+    width: 30%;
+    height: 55%;
 
-    /* ширину оставляем прежней */
-    width: 28%;
-
-    /* примерно на 40% выше прежней */
-    height: 59%;
-
-    /* небольшой зазор до MRZ (~2–3 мм относительно документа) */
-    bottom: 28%;
-
-    border: 2px dashed rgba(255,230,0,.9);
+    border: 2px dashed rgba(255, 230, 0, 0.9);
     border-radius: 4px;
-    box-sizing: border-box;
-
-    box-shadow: 0 0 10px rgba(255,230,0,.08);
 }
 
 /* =========================
@@ -168,12 +162,11 @@ video {
 
     left: 4%;
     right: 4%;
-    bottom: 10%;
+    bottom: 8%;
 
     height: 16%;
 
     border-top: 2px dashed rgba(0, 200, 255, 0.9);
-    opacity: 0.9;
 }
 
 /* =========================
@@ -215,19 +208,4 @@ button {
     font-weight: bold;
 
     box-shadow: 0 0 15px rgba(0,255,122,0.25);
-}
-
-/* =========================
-   RESPONSIVE TWEAKS
-========================= */
-@media (orientation: landscape) {
-    .passport-frame {
-        height: 88vh;
-    }
-}
-
-@media (orientation: portrait) {
-    .passport-frame {
-        height: 94vh;
-    }
 }

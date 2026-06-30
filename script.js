@@ -4,7 +4,7 @@ const statusEl = document.getElementById("status");
 const btn = document.getElementById("captureBtn");
 
 /* =========================
-   CAMERA START
+   START CAMERA
 ========================= */
 async function startCamera() {
     try {
@@ -19,6 +19,9 @@ async function startCamera() {
 
         video.onloadedmetadata = async () => {
             await video.play();
+
+            setCameraRatio(); // 🔥 критично для исправления пропорций
+
             statusEl.innerText = "READY ✔";
         };
 
@@ -29,7 +32,26 @@ async function startCamera() {
 }
 
 /* =========================
-   CAPTURE + CROP
+   FIX CAMERA RATIO (IMPORTANT)
+========================= */
+function setCameraRatio() {
+    const track = video?.srcObject?.getVideoTracks?.()[0];
+    if (!track) return;
+
+    const settings = track.getSettings();
+
+    if (settings.width && settings.height) {
+        const ratio = settings.width / settings.height;
+
+        document.documentElement.style.setProperty(
+            "--cam-ratio",
+            ratio
+        );
+    }
+}
+
+/* =========================
+   CAPTURE + CROP PASSPORT AREA
 ========================= */
 function capturePassport() {
 
@@ -38,26 +60,24 @@ function capturePassport() {
     const vw = video.videoWidth;
     const vh = video.videoHeight;
 
-    /* full frame canvas */
     canvas.width = vw;
     canvas.height = vh;
 
     ctx.drawImage(video, 0, 0, vw, vh);
 
     /* =========================
-       ID-1 FRAME GEOMETRY
-       MUST MATCH CSS
+       FRAME GEOMETRY (matches CSS center layout)
     ========================= */
-    const frameAspect = 1.586;
+    const frameAspect = vw / vh;
 
-    let frameW = vw * 0.88;
-    let frameH = frameW / frameAspect;
+    let frameH = vh * 0.92;
+    let frameW = frameH * frameAspect;
 
     const frameX = (vw - frameW) / 2;
     const frameY = (vh - frameH) / 2;
 
     /* =========================
-       OUTPUT CANVAS (NO DPI SCALING)
+       OUTPUT CANVAS (CLEAN IMAGE)
     ========================= */
     const out = document.createElement("canvas");
     const octx = out.getContext("2d");
@@ -78,7 +98,7 @@ function capturePassport() {
     );
 
     /* =========================
-       EXPORT JPEG (balanced quality)
+       EXPORT JPEG
     ========================= */
     out.toBlob((blob) => {
 
@@ -110,5 +130,7 @@ function capturePassport() {
 ========================= */
 btn.addEventListener("click", capturePassport);
 
-/* START */
+/* =========================
+   INIT
+========================= */
 startCamera();
