@@ -71,7 +71,7 @@ video {
 .camera-frame {
     position: relative;
 
-    width: min(72dvw, 1000px, calc(78dvh * 1.396));
+    width: min(86dvw, 1180px, calc(92dvh * 1.396));
     height: auto;
 
     aspect-ratio: 1.396;
@@ -99,7 +99,7 @@ video {
     }
 
     .camera-frame {
-        width: min(72dvh, calc(70dvw * 1.396));
+        width: min(88dvh, calc(84dvw * 1.396));
     }
 }
 
