@@ -57,20 +57,23 @@ video {
 .camera-frame {
     position: relative;
 
-    width: min(98dvw, 1000px, calc(96dvh * 1.586));
+    width: min(98dvw, 1000px, calc(96dvh * 1.396));
     height: auto;
 
-    aspect-ratio: 1.586;
+    aspect-ratio: 1.396;
 
     display: flex;
     align-items: center;
     justify-content: center;
+
+    transform: translateX(-6%);
+    transform-origin: center;
 }
 
 @media (orientation: portrait) {
     .camera-frame {
-        width: min(96dvh, calc(98dvw * 1.586));
-        transform: rotate(90deg);
+        width: min(96dvh, calc(98dvw * 1.396));
+        transform: translateY(-6%) rotate(90deg);
         transform-origin: center;
     }
 }
