@@ -14,7 +14,8 @@ async function startCamera() {
             video: {
                 facingMode: "environment",
                 width: { ideal: 4096 },
-                height: { ideal: 2160 }
+                height: { ideal: 2160 },
+                resizeMode: "none"
             },
             audio: false
         });
@@ -29,7 +30,13 @@ async function startCamera() {
 
         video.addEventListener("loadedmetadata", async () => {
             await video.play();
-            statusEl.innerText = "READY ✔";
+
+            const settings = track.getSettings ? track.getSettings() : {};
+            if (settings.width && settings.height) {
+                statusEl.innerText = "READY " + settings.width + "x" + settings.height;
+            } else {
+                statusEl.innerText = "READY ✔";
+            }
         });
 
     } catch (err) {
@@ -84,7 +91,30 @@ function getFrameCropRect() {
     };
 }
 
+async function getCameraBitmap() {
+    if (imageCapture && imageCapture.takePhoto) {
+        try {
+            const photoBlob = await imageCapture.takePhoto();
+            return await createImageBitmap(photoBlob);
+        } catch (err) {
+            console.warn("takePhoto fallback", err);
+        }
+    }
+
+    if (imageCapture && imageCapture.grabFrame) {
+        try {
+            return await imageCapture.grabFrame();
+        } catch (err) {
+            console.warn("grabFrame fallback", err);
+        }
+    }
+
+    return video;
+}
+
 async function capturePhoto() {
+    let bitmap = null;
+
     try {
         statusEl.innerText = "CAPTURING...";
 
@@ -92,20 +122,36 @@ async function capturePhoto() {
             throw new Error("Video is not ready");
         }
 
-        const crop = getFrameCropRect();
+        const videoCrop = getFrameCropRect();
+        const source = await getCameraBitmap();
+        const sourceWidth = source.videoWidth || source.width;
+        const sourceHeight = source.videoHeight || source.height;
+
+        const scaleX = sourceWidth / video.videoWidth;
+        const scaleY = sourceHeight / video.videoHeight;
+        const sx = Math.max(0, Math.round(videoCrop.sx * scaleX));
+        const sy = Math.max(0, Math.round(videoCrop.sy * scaleY));
+        const sw = Math.min(sourceWidth - sx, Math.round(videoCrop.sw * scaleX));
+        const sh = Math.min(sourceHeight - sy, Math.round(videoCrop.sh * scaleY));
+
         const canvas = document.createElement("canvas");
-        canvas.width = crop.sw;
-        canvas.height = crop.sh;
+        canvas.width = Math.max(1, sw);
+        canvas.height = Math.max(1, sh);
 
         const ctx = canvas.getContext("2d");
+        ctx.imageSmoothingEnabled = false;
         ctx.drawImage(
-            video,
-            crop.sx, crop.sy, crop.sw, crop.sh,
-            0, 0, crop.sw, crop.sh
+            source,
+            sx, sy, canvas.width, canvas.height,
+            0, 0, canvas.width, canvas.height
         );
 
+        if (source !== video && source.close) {
+            bitmap = source;
+        }
+
         const blob = await new Promise(res =>
-            canvas.toBlob(res, "image/jpeg", 0.95)
+            canvas.toBlob(res, "image/jpeg", 0.98)
         );
 
         const url = URL.createObjectURL(blob);
@@ -125,6 +171,10 @@ async function capturePhoto() {
     } catch (err) {
         console.error(err);
         statusEl.innerText = "ERROR";
+    } finally {
+        if (bitmap && bitmap.close) {
+            bitmap.close();
+        }
     }
 }
 
