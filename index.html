@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Passport Scanner</title>
 
-  <link rel="stylesheet" href="style.css?v=14">
+  <link rel="stylesheet" href="style.css?v=16">
 </head>
 
 <body>
@@ -14,29 +14,35 @@
 
 <div class="overlay"></div>
 
-<div class="frame-wrap">
-  <div class="camera-frame">
+<div class="scanner-shell">
+  <div class="scanner-layout">
+    <div class="frame-column">
+      <div id="status" class="status">INIT...</div>
 
-    <div class="passport-frame">
+      <div class="frame-wrap">
+        <div class="camera-frame">
 
-      <div class="corner tl"></div>
-      <div class="corner tr"></div>
-      <div class="corner bl"></div>
-      <div class="corner br"></div>
+          <div class="passport-frame">
 
-      <div class="photo-zone"></div>
-      <div class="mrz-zone"></div>
+            <div class="corner tl"></div>
+            <div class="corner tr"></div>
+            <div class="corner bl"></div>
+            <div class="corner br"></div>
 
+            <div class="photo-zone"></div>
+            <div class="mrz-zone"></div>
+
+          </div>
+
+        </div>
+      </div>
     </div>
 
+    <button id="captureBtn">CAPTURE</button>
   </div>
 </div>
 
-<div id="status" class="status">INIT...</div>
-
-<button id="captureBtn">CAPTURE</button>
-
-<script src="script.js?v=14"></script>
+<script src="script.js?v=16"></script>
 
 </body>
 </html>

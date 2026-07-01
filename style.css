@@ -31,9 +31,9 @@ video {
 }
 
 /* =========================
-   CENTER WRAPPER
+   ROTATING SCANNER UI
 ========================= */
-.frame-wrap {
+.scanner-shell {
     position: fixed;
     inset: 0;
 
@@ -49,6 +49,28 @@ video {
     box-sizing: border-box;
 
     z-index: 3;
+    transform-origin: center;
+}
+
+.scanner-layout {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(12px, 3dvw, 28px);
+}
+
+.frame-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.frame-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 /* =========================
@@ -57,7 +79,7 @@ video {
 .camera-frame {
     position: relative;
 
-    width: min(82dvw, 1000px, calc(94dvh * 1.396));
+    width: min(72dvw, 1000px, calc(78dvh * 1.396));
     height: auto;
 
     aspect-ratio: 1.396;
@@ -67,13 +89,25 @@ video {
     justify-content: center;
 
     transform-origin: center;
+    z-index: 1;
 }
 
 @media (orientation: portrait) {
+    .scanner-shell {
+        inset: auto;
+        top: 50%;
+        left: 50%;
+        width: 100dvh;
+        height: 100dvw;
+        transform: translate(-50%, -50%) rotate(90deg);
+    }
+
+    .scanner-layout {
+        gap: clamp(10px, 3dvh, 22px);
+    }
+
     .camera-frame {
-        width: min(94dvh, calc(72dvw * 1.396));
-        transform: rotate(90deg);
-        transform-origin: center;
+        width: min(72dvh, calc(70dvw * 1.396));
     }
 }
 
@@ -165,59 +199,43 @@ video {
    BUTTON
 ========================= */
 button {
-    position: fixed;
-
-    top: 50%;
-    right: max(18px, env(safe-area-inset-right));
-    bottom: auto;
-    left: auto;
-    transform: translateY(-50%);
-    transform-origin: center;
-
-    z-index: 10;
+    position: relative;
 
     width: 76px;
     height: 76px;
     padding: 0;
-    font-size: 12px;
-    line-height: 1;
+    flex: 0 0 auto;
 
+    z-index: 4;
+
+    color: #001b0d;
     background: #00ff7a;
     border: 4px solid rgba(255,255,255,0.9);
     border-radius: 50%;
 
+    font-size: 12px;
+    line-height: 1;
     font-weight: bold;
+}
+
+@media (orientation: portrait) {
+    button {
+        width: 56px;
+        height: 56px;
+        font-size: 9px;
+    }
 }
 
 /* =========================
    STATUS
 ========================= */
 .status {
-    position: fixed;
-    top: max(16px, env(safe-area-inset-top));
-    left: 50%;
-    transform: translateX(-50%);
-    transform-origin: center;
+    position: relative;
 
-    z-index: 10;
+    z-index: 4;
 
     color: #00ff7a;
     font-weight: bold;
     white-space: nowrap;
-}
-
-@media (orientation: portrait) {
-    button {
-        top: 50%;
-        right: max(18px, env(safe-area-inset-right));
-        bottom: auto;
-        left: auto;
-        transform: translateY(-50%);
-    }
-
-    .status {
-        top: max(16px, env(safe-area-inset-top));
-        left: 50%;
-        transform: translateX(-50%);
-    }
+    text-align: center;
 }
